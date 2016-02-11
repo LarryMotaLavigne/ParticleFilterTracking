@@ -44,3 +44,28 @@ Edge::~Edge()
 
 }
 
+/**********************************************************************/
+/*                               GETTER                               */
+/**********************************************************************/
+
+/**
+ * Get the id of the source node
+ * @brief Edge::getSourceNode
+ * @return the id of the source node
+ */
+unsigned int Edge::getSourceNode()
+{
+    return this->sourceNode_;
+}
+
+
+/**
+ * Get the id of the destination node
+ * @brief Edge::getDestinationNode
+ * @return the id of the destination node
+ */
+unsigned int Edge::getDestinationNode()
+{
+    return this->destinationNode_;
+}
+

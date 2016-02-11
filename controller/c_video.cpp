@@ -1,9 +1,9 @@
 #include "controller/c_video.h"
 
 /**
- * Le constructeur
+ * Constructor
  * @brief C_Video::C_Video
- * @param parent
+ * @param parent the parent object
  */
 C_Video::C_Video(QObject *parent) : QObject(parent)
 {
@@ -11,7 +11,7 @@ C_Video::C_Video(QObject *parent) : QObject(parent)
 }
 
 /**
- * Le destructeur
+ * Destructor
  * @brief C_Video::~C_Video
  */
 C_Video::~C_Video()
@@ -20,66 +20,47 @@ C_Video::~C_Video()
 }
 
 /**
- * Retour à la première frame de la vidéo chargée au sein de la plateforme
- * @brief C_Video::returnToFirstFrame
+ * Get the loaded video
+ * @brief C_Video::getLoadedVideo
+ * @return the loaded video
  */
-void C_Video::returnToFirstFrame()
+Video* C_Video::getLoadedVideo()
 {
-    MainWindow *w = (MainWindow *)parent();
-
-    //VideoCapture de l'objet Video
-    cv::VideoCapture cap = loadedVideo->getVideoCapture();
-
-    //on réinitialise l'indice de l'objet vidéo à 0, ainsi que celui de l'attribut VideoCapture
-    loadedVideo->setIndex(0);
-    cap.set(CV_CAP_PROP_POS_FRAMES,0);
-
-    //on affiche la première image de la vidéo
-    QPixmap image = loadedVideo->getCurrentImage();
-    Frame frame = loadedVideo->getCurrentFrame();
-
-    //ajout des particules dans la tableau
-    w->addParticles(frame);
-
-    w->viewerUpdate(image);
-
-    //indice courant de frame
-    Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
-
-    //Bouton Précédent inactif, boutons Next et Lecture actifs
-    w->ui->previousButton->setEnabled(false);
-    w->ui->nextButton->setEnabled(true);
-    w->ui->playButton->setEnabled(true);
-
+    return this->loadedVideo;
 }
 
+
+/**********************************************************************/
+/*                               TIMER                                */
+/**********************************************************************/
+
 /**
- * Démarrage ou arrêt du Timer suivant la lecture ou non de la vidéo
+ * Start or stop the timer if the play button is trigger
  * @brief C_Video::startOrStopTimer
  */
 void C_Video::startOrStopTimer()
 {
     MainWindow *w = (MainWindow *)parent();
 
-    //si le timer n'est pas actif (ie. pas de lecture vidéo en cours), on l'active et la lecture de la vidéo se fait
+    // If the timer isn't active (The video isn't playing), we active it
     if(!w->tmrTimer->isActive())
     {
         w->tmrTimer->start();
         w->ui->playButton->setIcon(QIcon(":/logo/pause"));
         w->ui->playButton->setShortcut(Qt::Key_Space);
-        //par défaut durant la lecture on désactive les boutons de visualisation frame par frame
+        // By default, we disable the previous and next button
         w->ui->previousButton->setEnabled(false);
         w->ui->nextButton->setEnabled(false);
         w->ui->boutonRevenirDebut->setEnabled(false);
         Tools::debugMessage("-----DEMARRAGE DE LA LECTURE-----");
-        //si le timer est actif (ie. lecture vidéo en cours), on le désactive et la lecture de la vidéo s'arrête
     }
+    // If the timer is active (The video is playing), we disable it
     else
     {
         w->tmrTimer->stop();
         w->ui->playButton->setIcon(QIcon(":/logo/play"));
         w->ui->playButton->setShortcut(Qt::Key_Space);
-        //par défaut lorsqu'il n'y a pas lecture on active les boutons de visualisation frame par frame
+        // By default, we enable the previous and next button
         w->ui->previousButton->setEnabled(true);
         w->ui->nextButton->setEnabled(true);
         w->ui->boutonRevenirDebut->setEnabled(true);
@@ -88,206 +69,179 @@ void C_Video::startOrStopTimer()
 
 }
 
-void C_Video::displayObjects(){
-     if(getLoadedVideo()->isObjectsDisplay())
-     {
-        getLoadedVideo()->setObjectsDisplay(false);
-        Tools::debugMessage("Box unchecked");
-     }
-     else
-     {
-        getLoadedVideo()->setObjectsDisplay(true);
-        Tools::debugMessage("Box checked");
-     }
 
-     MainWindow *w = (MainWindow *)parent();
-     QPixmap pixmap = getLoadedVideo()->refreshCurrentImage();
-     w->viewerUpdate(pixmap);
-}
-
-
-void C_Video::displayGraphs(QTableWidgetItem* item)
-{
-    int rowValue = item->row();
-    int idGraph = item->tableWidget()->item(rowValue,0)->text().toInt();
-    if(item->isSelected())
-    {
-        getLoadedVideo()->setGraphDisplay(true, idGraph);
-    }
-    else
-    {
-        getLoadedVideo()->setGraphDisplay(false, idGraph);
-    }
-
-    MainWindow *w = (MainWindow *)parent();
-    QPixmap pixmap = getLoadedVideo()->refreshCurrentImage();
-    w->viewerUpdate(pixmap);
-}
-
+/**********************************************************************/
+/*                             OPEN/READ                              */
+/**********************************************************************/
 
 /**
- * Lecture de la vidéo chargée au sein de la plateforme
+ * Read the loaded video
  * @brief C_Video::readVideo
  */
 void C_Video::readVideo()
 {
     MainWindow *w = (MainWindow *)parent();
 
-    //on récupère l'image courante
+    // Next Image from the Loaded Video
     loadedVideo->next();
-    QPixmap image = loadedVideo->getCurrentImage();
+    QPixmap image = loadedVideo->getNextImage();
     Frame frame = loadedVideo->getCurrentFrame();
 
-    //si l'image courante est pas nulle, alors on l'affiche au sein du QLabel
+    // If the image isn't null, we display
     if(!image.isNull())
     {
-        //ajout des particules dans la tableau
+
         w->addParticles(frame);
         w->viewerUpdate(image);
 
-        //indice courant de frame
-        Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
+        Tools::debugMessage("Frame Index", loadedVideo->getFrameIndex());
 
-        //si l'image est nulle on arrête la lecture et on revient à la première frame de la vidéo
     }
+    // Else, we stop the timer and go back to the first frame
     else
     {
-        //arrêt du Timer
+        // Timer stop
         startOrStopTimer();
-        //remise à zéro de l'indice de VideoCapture ainsi que de l'objet Video
+        // Reset
         loadedVideo->getVideoCapture().set(CV_CAP_PROP_POS_FRAMES,0);
         loadedVideo->setIndex(0);
-        //on réaffiche par défaut la première frame de vidéo
-        image = loadedVideo->getCurrentImage();
+
+        // Display the first image
+        image = loadedVideo->getNextImage();
         frame = loadedVideo->getCurrentFrame();
         w->viewerUpdate(image);
 
-        //indice courant de frame
-        Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
+        Tools::debugMessage("Frame Index", loadedVideo->getFrameIndex());
 
-        //le bouton Précédent est désactivé
+        // Disable the previous button
         w->ui->previousButton->setEnabled(false);
     }
 }
 
 /**
- * Ouverture d'une vidéo sélectionnée au sein d'une arborescence de fichier
- * @brief C_Video::ouvrirVideo
- * @return true si réussite de l'ouverture de la vidéo, false sinon
+ * Open a video
+ * @brief C_Video::openVideo
+ * @return true if it succeeds, else false
  */
 bool C_Video::openVideo()
 {
     MainWindow *w = (MainWindow *)parent();
 
-    Tools::debugMessage("Ouverture de la fenêtre d'importation de la vidéo");
-    //récupération de l'emplacement du fichier à ouvrir
+
+    Tools::debugMessage("###################");
+    Tools::debugMessage("C_Video::openVideo : Start");
+
+    // File location
     QString title = "Open a video";
     QString directory = "C://";
 
     QString fichier = QFileDialog::getOpenFileName(w, title, directory, tr("Videos (*.avi *.mov *.mpg *.mp4 *.asf)"));
 
-    //vérification de la bonne ouverture de fichier
+    // Check the file importation
     if (fichier.isEmpty())
     {
-        Tools::debugMessage("Annulation de l'ouverture d'une vidéo");
+        Tools::debugMessage("Video loading cancel");
         w->ui->statusBar->showMessage("Video loading Cancel",0);
         return false;
     }
-    //on affiche un message dans la barre de statut
-    w->ui->statusBar->showMessage("Chargement de la vidéo en cours...",0);
 
-    Tools::debugMessage("Nom du fichier sélectionné", fichier);
-    Tools::debugMessage("Ouverture de la vidéo");
+    w->ui->statusBar->showMessage("Video Loading...",0);
 
-    //CONSTRUCTION DE L'OBJET VIDEO
-    Tools::debugMessage("Initialisation de l'objet Video");
+    Tools::debugMessage("Filename", fichier);
+    Tools::debugMessage("Video opening");
+
+    // Video Object Creation
+    Tools::debugMessage("Video Init BEGIN");
     loadedVideo = new Video(fichier);
     loadedVideo->setIndex(0);
-    Tools::debugMessage("Initialisation de l'objet Video terminée");
+    Tools::debugMessage("Video init END");
 
-    //nombre de frames dans la vidéo sélectionnée
+    // Frame count in the video
     unsigned int count = loadedVideo->getFramesCount();
-    Tools::debugMessage("Nombre de frames", count);
+    Tools::debugMessage("Number of frames", count);
 
-    //CONSTRUCTION DES OBJETS FRAMES
-    Tools::debugMessage("Initialisation des objets Frame");
-    for (int i=0;i<count;i++)
+    // Frame Object Creation
+    Tools::debugMessage("Frame Init BEGIN");
+    for (unsigned int i=0;i<count;i++)
     {
-        Frame * maFrame = new Frame(i);
-        loadedVideo->addFrame(*maFrame);
+        Frame * myFrame = new Frame(i);
+        loadedVideo->addFrame(*myFrame);
     }
+    Tools::debugMessage("Frame Init END");
 
-    Tools::debugMessage("Initialisation des objets Frame terminée");
 
-    //On travaille avec la VideoCapture de l'objet Video
+    // VideoCapture Parameter
     cv::VideoCapture cap = loadedVideo->getVideoCapture();
 
-    //on initialise l'intervalle du Timer en fonction du Frame Rate de la vidéo sélectionnée
+    // Timer initialization according the video frame rate
     w->tmrTimer->setInterval(1000/cap.get(CV_CAP_PROP_FPS));
 
-    Tools::debugMessage("Valeur de l'intervalle de Timer", 1000/cap.get(CV_CAP_PROP_FPS));
+    Tools::debugMessage("Interval Timer value", 1000/cap.get(CV_CAP_PROP_FPS));
 
-    //récupération de la 1ère frame au format QPixmap
-    QPixmap image = loadedVideo->getCurrentImage();
-    Tools::debugMessage("getCurrentImage OK");
+    // First Image/Frame
+    QPixmap image = loadedVideo->getNextImage();
     Frame fr = loadedVideo->getCurrentFrame();
-    Tools::debugMessage("getCurrentFrame OK");
 
-    //ajout des particules dans la tableau
+    // Add Particles in the table
     w->addParticles(fr);
 
-    //indice courant de frame
-    Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
+    Tools::debugMessage("Frame Index", loadedVideo->getFrameIndex());
 
-    //AFFICHAGE DE LA PREMIERE FRAME DE L'OBJET VIDEO DANS LA MAINWINDOW
+    // Display the first image in the viewer
     w->ui->viewer->setGeometry(QRect(QPoint(500,500),QPoint(1200,1200)));
-    //on charge la première frame de la vidéo
     w->viewerUpdate(image);
 
-    //on rend le bouton Frame suivante actif, ainsi que le bouton de lecture et le retour à la première frame
+    //Enable buttons
     w->ui->nextButton->setEnabled(true);
     w->ui->playButton->setEnabled(true);
     w->ui->boutonRevenirDebut->setEnabled(true);
 
-    //on rend accessible la fonction d'import d'un algorithme
+    // Enable action openAlgorithm
     w->ui->action_openAlgorithm->setEnabled(true);
 
-    //on active la spinBox indiquant le numéro de frame courant
-    //*
-    //w->ui->spinBoxFrame->setEnabled(true);
+    // define spinBox maximum value
     w->ui->spinBoxFrame->setMaximum((int)count);
-    /* */
 
-    //on affiche un message dans la barre de statut
-    w->ui->statusBar->showMessage("Chargement de la vidéo terminé !",0);
+    w->ui->statusBar->showMessage("Video loading Complete !",0);
+
+    Tools::debugMessage("C_Video::openVideo : End");
+    Tools::debugMessage("###################");
+
+
     return true;
 }
 
+
+/**********************************************************************/
+/*                               FRAME                                */
+/**********************************************************************/
+
+
 /**
- * Aller à la frame suivante de la vidéo chargée au sein de la plateforme
- * @brief C_Video::testNext
+ * Go to the next frame
+ * @brief C_Video::goToNextFrame
  */
 void C_Video::goToNextFrame()
 {
     MainWindow *w = (MainWindow *)parent();
 
-    //on s'assure que le bouton Précédent soit activé dans tous les cas
+    // Enable previous button in every case
     w->ui->previousButton->setEnabled(true);
 
-    //on insère la frame suivante dans le Label de la fenêtre
+    // Get the next frame from the loaded video
     loadedVideo->next();
-    QPixmap image = loadedVideo->getCurrentImage();
+    QPixmap image = loadedVideo->getNextImage();
     Frame fr = loadedVideo->getCurrentFrame();
 
-    //ajout des particules dans le tableau
+    // Update the particles in the table
     w->addParticles(fr);
 
+    // Update the viewer
     w->viewerUpdate(image);
 
-    //indice courant de frame
-    Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
+    Tools::debugMessage("Frame Index", loadedVideo->getFrameIndex());
 
-    //on désactive le bouton Suivant si nous sommes à la fin de la liste
+    //If we are at the end of the list, we disable the next button
     if(loadedVideo->getFrameIndex()==loadedVideo->getFramesList().size()-1)
     {
         w->ui->nextButton->setEnabled(false);
@@ -296,30 +250,30 @@ void C_Video::goToNextFrame()
 }
 
 /**
- * Aller à la frame suivante de la vidéo chargée au sein de la plateforme
- * @brief C_Video::testPrevious
+ * Go to previous frame
+ * @brief C_Video::goToPreviousFrame
  */
 void C_Video::goToPreviousFrame()
 {
     MainWindow *w = (MainWindow *)parent();
 
-    //on s'assure que le bouton Suivant soit activé dans tous les cas
+    // Enable next button in every case
     w->ui->nextButton->setEnabled(true);
 
-    //on insère la frame précédente dans le Label de la fenêtre
+    // Get the previous frame from the loaded video
     loadedVideo->previous();
-    QPixmap image = loadedVideo->getCurrentImage();
+    QPixmap image = loadedVideo->getNextImage();
     Frame fr = loadedVideo->getCurrentFrame();
 
-    //ajout des particules dans la tableau
+    // Update the particles in the table
     w->addParticles(fr);
 
+    // Update the viewer
     w->viewerUpdate(image);
 
-    //indice courant de frame
-    Tools::debugMessage("Indice courant de frame", loadedVideo->getFrameIndex());
+    Tools::debugMessage(" Frame Index", loadedVideo->getFrameIndex());
 
-    //on désactive le bouton Précédent si nous sommes au début de la liste
+    //If we are at the begin of the list, we disable the previous button
     if(loadedVideo->getFrameIndex()==0)
     {
         w->ui->previousButton->setEnabled(false);
@@ -353,5 +307,93 @@ void C_Video::goToSpecificFrame()
     if(videoChargee->getIndice()==videoChargee->getFrames().size()-1){
         w->ui->nextButton->setEnabled(false);
     }*/
+}
+
+/**
+ * Go back to the first frame from the loaded video
+ * @brief C_Video::returnToFirstFrame
+ */
+void C_Video::returnToFirstFrame()
+{
+    MainWindow *w = (MainWindow *)parent();
+
+    // Video Capture object from the loaded video
+    cv::VideoCapture cap = loadedVideo->getVideoCapture();
+
+    // Reset the loaded video index and the VideoCapture index
+    loadedVideo->setIndex(0);
+    cap.set(CV_CAP_PROP_POS_FRAMES,0);
+
+    // Get the next image from the capture (first frame)
+    QPixmap image = loadedVideo->getNextImage();
+    Frame frame = loadedVideo->getCurrentFrame();
+
+    // Update the particle table
+    w->addParticles(frame);
+
+    // Update the viewer
+    w->viewerUpdate(image);
+
+    Tools::debugMessage("Frame Index", loadedVideo->getFrameIndex());
+
+    //Disable previous button, Enable next and play button
+    w->ui->previousButton->setEnabled(false);
+    w->ui->nextButton->setEnabled(true);
+    w->ui->playButton->setEnabled(true);
+
+}
+
+/**********************************************************************/
+/*                              DISPLAY                               */
+/**********************************************************************/
+
+/**
+ * Display the object on the current frame
+ * @brief C_Video::displayObjects
+ */
+void C_Video::displayObjects(){
+    // If the loaded video get the checkbox check
+     if(getLoadedVideo()->isObjectsDisplay())
+     {
+        getLoadedVideo()->setObjectsDisplay(false);
+        Tools::debugMessage("Box unchecked");
+     }
+     else
+     {
+        getLoadedVideo()->setObjectsDisplay(true);
+        Tools::debugMessage("Box checked");
+     }
+
+     // We refresh the viewer
+     MainWindow *w = (MainWindow *)parent();
+     QPixmap pixmap = getLoadedVideo()->getCurrentImage();
+     w->viewerUpdate(pixmap);
+}
+
+
+/**
+ * Display the graphs on the current frame
+ * @brief C_Video::displayGraphs
+ */
+void C_Video::displayGraphs(QTableWidgetItem* item)
+{
+    // If an item (a graph) is selected, we get the ID
+    int rowValue = item->row();
+    int idGraph = item->tableWidget()->item(rowValue,0)->text().toInt();
+    if(item->isSelected())
+    {
+        // We add the id to the list
+        getLoadedVideo()->setGraphDisplay(true, idGraph);
+    }
+    else
+    {
+        // We remove the id to the list
+        getLoadedVideo()->setGraphDisplay(false, idGraph);
+    }
+
+    // We refresh the viewer
+    MainWindow *w = (MainWindow *)parent();
+    QPixmap pixmap = getLoadedVideo()->getCurrentImage();
+    w->viewerUpdate(pixmap);
 }
 

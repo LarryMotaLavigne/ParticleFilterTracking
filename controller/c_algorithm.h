@@ -21,6 +21,7 @@ class C_Algorithm : public QObject
 {
     Q_OBJECT
 public:
+
     C_Algorithm(QObject *parent = NULL);
     ~C_Algorithm();
 
@@ -28,11 +29,13 @@ public:
     QStringList frameHypList_; // list which contain the file : FrameHyp<numFrame>.txt
     QStringList graphList_;    // list which contain the file : Graph<numFrame>_<numParticle>.txt
 
+    QMap<QString,double> map; // QMap which associate a Weight to a Graph
+
+    /********* DISPLAY *********/
     void displayObjectList();
     void displayFrameHypList();
     void displayGrapheList();
 
-    QMap<QString,double> map; // QMap which associate a Weight to a Graph
 
 public slots :
     bool openAlgorithm(); // Opening of the algorithm files

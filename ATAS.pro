@@ -12,7 +12,7 @@ TARGET = ATAS
 TEMPLATE = app
 
 CONFIG += console\
-          c++11
+          c++11\
 
 SOURCES += main.cpp\
     tools.cpp \

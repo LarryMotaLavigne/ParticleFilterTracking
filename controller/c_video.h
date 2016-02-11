@@ -19,25 +19,25 @@ public:
     C_Video(QObject *parent = NULL);
     ~C_Video();
 
-    Video* getLoadedVideo(){return this->loadedVideo;} //retourne la vidéo chargée
+    Video* getLoadedVideo();
 
 public slots :
     /********* TIMER *********/
-    void startOrStopTimer(); //Démarrer ou arrêter le Timer
+    void startOrStopTimer(); //Start or Stop the timer
 
     /********* OPEN/READ *********/
-    void readVideo(); //Lire la vidéo
-    bool openVideo(); //Ouvrir la vidéo
+    void readVideo();
+    bool openVideo();
 
     /********* FRAME *********/
-    void goToNextFrame(); //Aller à la frame suivante
-    void goToPreviousFrame(); //Aller à la frame précédente
-    void goToSpecificFrame(); //Aller à une frame spécifique
-    void returnToFirstFrame(); //Retourner à la première frame de la vidéo
+    void goToNextFrame();
+    void goToPreviousFrame();
+    void goToSpecificFrame();
+    void returnToFirstFrame();
 
-    /********* ELEMENTS *********/
-    void displayObjects(); // Affiche l'ensemble des objets sur la frame en cours
-    void displayGraphs(QTableWidgetItem *item);
+    /********* DISPLAY *********/
+    void displayObjects(); // Display the object on the current frame
+    void displayGraphs(QTableWidgetItem *item); // Display a graph according the selected item
 
 
 };

@@ -102,36 +102,16 @@ cv::Mat Video::getFrameMatrix()
 
 
 /**
- * Get the current image with the drawing
- * @brief Video::getCurrentImage
+ * Get the next image with the drawing
+ * @brief Video::getNextImage
  * @return pixmap the QPixmap object
  */
-QPixmap Video::getCurrentImage()
+QPixmap Video::getNextImage()
 {
     cap_ >> frameMatrix_;
+    cv::Mat matrix = frameMatrix_.clone();
     Frame fr = getCurrentFrame();
 
-    // Objects display
-    if (!fr.getObjectsList().isEmpty() && isObjectsDisplay())
-    {
-        fr.drawObjects(frameMatrix_);
-    }
-    // Particles display
-    if (!fr.getParticlesList().isEmpty())
-    {
-        for (int i = 0; i < graphIdToDisplay_.size(); ++i) {
-            fr.drawParticle(frameMatrix_,graphIdToDisplay_[i]);
-        }
-    }
-    QPixmap pixmap = Tools::cvMatToQPixmap(frameMatrix_);
-    return pixmap;
-}
-
-
-QPixmap Video::refreshCurrentImage()
-{
-    cv::Mat matrix = getFrameMatrix();
-    Frame fr = getCurrentFrame();
     // Objects display
     if (!fr.getObjectsList().isEmpty() && isObjectsDisplay())
     {
@@ -141,7 +121,35 @@ QPixmap Video::refreshCurrentImage()
     if (!fr.getParticlesList().isEmpty())
     {
         for (int i = 0; i < graphIdToDisplay_.size(); ++i) {
-            fr.drawParticle(frameMatrix_,graphIdToDisplay_[i]);
+            fr.drawParticle(matrix,graphIdToDisplay_[i]);
+        }
+    }
+    QPixmap pixmap = Tools::cvMatToQPixmap(matrix);
+    return pixmap;
+}
+
+
+/**
+ * Get the current image with the drawing
+ * @brief Video::getNextImage
+ * @return pixmap the QPixmap object
+ */
+QPixmap Video::getCurrentImage()
+{
+    cv::Mat matrix = frameMatrix_.clone();
+    Frame fr = getCurrentFrame();
+    // Objects display
+    if (!fr.getObjectsList().isEmpty() && isObjectsDisplay())
+    {
+        Tools::debugMessage("VIDEO : Affichage des objets");
+        fr.drawObjects(matrix);
+    }
+    // Particles display
+    if (!fr.getParticlesList().isEmpty() && graphIdToDisplay_.size()!=0)
+    {
+        Tools::debugMessage("VIDEO : Affichage des graphes");
+        for (int i = 0; i < graphIdToDisplay_.size(); ++i) {
+            fr.drawParticle(matrix,graphIdToDisplay_[i]);
         }
     }
     QPixmap pixmap = Tools::cvMatToQPixmap(matrix);

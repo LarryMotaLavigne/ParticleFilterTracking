@@ -12,7 +12,6 @@
 #include "tools.h"
 #include "model/object.h"
 #include "model/particle.h"
-#include "model/layer.h"
 
 class Frame
 {

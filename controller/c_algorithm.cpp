@@ -3,7 +3,7 @@
 /**
  * Constructor
  * @brief C_Algorithm::C_Algorithm
- * @param parent
+ * @param parent the parent object
  */
 C_Algorithm::C_Algorithm(QObject *parent) : QObject(parent)
 {
@@ -263,18 +263,18 @@ bool C_Algorithm::createGraph(QString str)
         w->getVideoController()->getLoadedVideo()->getFramesList()[tempList.at(0).toInt()].addParticleToFrame(graphe);
 
 
-        //Tools::debugMessage("Nombre de particules dans la frame",w->getVideoController()->getVideoChargee()->getFrames()[tempList.at(0).toUInt()].getListParticules().size());
+        //Tools::debugMessage("Number of particles in the frame",w->getVideoController()->getVideoChargee()->getFrames()[tempList.at(0).toUInt()].getListParticules().size());
         return true;
     }
     else
     {
-        Tools::debugMessage("Impossible d'ouvrir le fichier !" + str);
+        Tools::debugMessage("Unable to open the file !" + str);
         return false;
     }
 }
 
 /**
- * Lecture des fichiers FrameHyp de l'algorithme à charger
+ * Read the FrameHyp files from the algorithm
  * @brief C_Algorithm::createFrameHyp
  * @param str
  * @return true si le création se fait correctement, false sinon
@@ -306,10 +306,14 @@ bool C_Algorithm::createFrameHyp(QString str)
 }
 
 
+/**********************************************************************/
+/*                              DISPLAY                               */
+/**********************************************************************/
 
-
-/********** AFFICHAGE **********/
-
+/**
+ * Display the object list in the debug console
+ * @brief C_Algorithm::displayObjectList
+ */
 void C_Algorithm::displayObjectList()
 {
     Tools::debugMessage("objectList");
@@ -319,6 +323,10 @@ void C_Algorithm::displayObjectList()
     }
 }
 
+/**
+ * Display the FrameHyp list in the debug console
+ * @brief C_Algorithm::displayFrameHypList
+ */
 void C_Algorithm::displayFrameHypList()
 {
     Tools::debugMessage("frameHypList");
@@ -328,6 +336,11 @@ void C_Algorithm::displayFrameHypList()
     }
 }
 
+
+/**
+ * Display the graph list in the debug console
+ * @brief C_Algorithm::displayGrapheList
+ */
 void C_Algorithm::displayGrapheList()
 {
     Tools::debugMessage("grapheList");

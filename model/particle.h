@@ -10,7 +10,7 @@ class Particle
 private:
     double weightParticle_; // particle weight
 protected:
-    unsigned int particleId_; // the particle id
+    unsigned int particleId_; // particle id
 public:
 
     Particle();

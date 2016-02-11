@@ -4,7 +4,7 @@
 /**
  * Constructor
  * @brief MainWindow::MainWindow
- * @param parent
+ * @param parent the parent QWidget
  */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->playButton->setEnabled(false);
     ui->playButton->setShortcut(Qt::Key_Space);
 
-    /********** TIMER pour la gestion de la lecture vidéo **********/
+    /********** TIMER for handling the video read **********/
     tmrTimer = new QTimer(this);
     connect(tmrTimer, SIGNAL(timeout()), videoController, SLOT(readVideo()));
 
@@ -42,50 +42,65 @@ MainWindow::MainWindow(QWidget *parent) :
     //gestion du spinBoxFrame
     //connect(ui->spinBoxFrame,SIGNAL(valueChanged(int)), videoController, SLOT(goToSpecificFrame()));
     //gestion du tableau des particules
-
-
 }
 
+
 /**
- * Mise à jour du contenu du Label de la fenêtre principale
+ * Destructor
+ * @brief MainWindow::~MainWindow
+ */
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+
+
+/**********************************************************************/
+/*                         INTERFACE FUNCTIONS                        */
+/**********************************************************************/
+
+/**
+ * Update the label viewer from the mainwindow
  * @brief MainWindow::setFrameIntoLabel
- * @param image
+ * @param image the pixmap to update
  */
 void MainWindow::viewerUpdate(QPixmap image)
 {
     if (!image.isNull())
     {
-        //mise à jour du contenu du Label
+        // Update the viewer
         ui->viewer->setPixmap(image);
         ui->viewer->adjustSize();
         ui->viewer->show();
-        //mise à jour du numéro de frame
+
+        // Update the frame index in the spinbox
         ui->spinBoxFrame->setValue(getVideoController()->getLoadedVideo()->getFrameIndex());
     }
     else
     {
-        Tools::debugMessage("Probleme de chargement de la frame de la video : NULL FRAME");
+        Tools::debugMessage("Unable to load the video frame");
     }
 }
 
 /**
- * Remplissage du tableau des particules au sein de l'application
+ * Update the particles table
  * @brief MainWindow::addParticles
- * @param frame
+ * @param frame the frame which contains the particles
  */
 void MainWindow::addParticles(Frame frame)
 {
 
-    //On efface les lignes déjà présentes dans la table
+    // Clean the particle table
     while (ui->tableParticle->rowCount()>0)
     {
         ui->tableParticle->removeRow(0);
     }
 
-    //on récupère la liste des particules de la frame en cours
+    // Get the particle list
     QList<Particle*> listParticles = frame.getParticlesList();
 
-    //si la liste des particules n'est pas vide, on remplit la QTableView avec
+    // We fill the table with the data if the list isn't empty
     if(!listParticles.isEmpty())
     {
         for (int i=0;i<listParticles.size();i++)
@@ -93,26 +108,30 @@ void MainWindow::addParticles(Frame frame)
             QTableWidgetItem *idParticle = new QTableWidgetItem(QString::number(i));
             QTableWidgetItem *weightParticle = new QTableWidgetItem(QString().setNum(listParticles.at(i)->getWeightParticle()));
 
-            //rend l'édition des données au sein de la QTableView impossible
+            // Unable to edit the data inside the QTableView
             idParticle->setFlags(idParticle->flags() ^ Qt::ItemIsEditable);
             weightParticle->setFlags(weightParticle->flags() ^ Qt::ItemIsEditable);
 
-            //*
+            // We insert a new row
             ui->tableParticle->insertRow(i);
             ui->tableParticle->setItem(i,0,idParticle);
             ui->tableParticle->setItem(i,1,weightParticle);
-            /* */
         }
+        // We sort the particle by id
         ui->tableParticle->sortByColumn(1);
     }
 }
 
+/**********************************************************************/
+/*                               GETTER                               */
+/**********************************************************************/
 
 /**
- * Le destructeur
- * @brief MainWindow::~MainWindow
+ * Get the video controller
+ * @brief MainWindow::getVideoController
+ * @return the video controller
  */
-MainWindow::~MainWindow()
+C_Video* MainWindow::getVideoController()
 {
-    delete ui;
+    return this->videoController;
 }

@@ -4,7 +4,7 @@
 #include <QFile>
 
 /**
- * Le constructeur
+ * Constructor
  * @brief Tools::Tools
  */
 Tools::Tools()
@@ -13,7 +13,7 @@ Tools::Tools()
 }
 
 /**
- * Le destructeur
+ * Destructor
  * @brief Tools::~Tools
  */
 Tools::~Tools()
@@ -22,9 +22,9 @@ Tools::~Tools()
 }
 
 /**
- * Affichage d'un message simple de debug
+ * Simple debug message
  * @brief Tools::debugMessage
- * @param message
+ * @param message the message to display
  */
 void Tools::debugMessage(QString message)
 {
@@ -32,21 +32,21 @@ void Tools::debugMessage(QString message)
 }
 
 /**
- * Affichage d'un message de debug suivi d'une valeur de type booléen
+ * Debug message with boolean value
  * @brief Tools::debugMessage
- * @param message
- * @param value
+ * @param message the message to display
+ * @param value the boolean value
  */
 void Tools::debugMessage(QString message, bool value)
 {
-    qDebug("%s : %s", message.toStdString().c_str(),value ? "true" : "false");
+    qDebug("%s : %s", message.toStdString().c_str(),value ? "True" : "False");
 }
 
 /**
- * Affichage d'un message de debug suivi d'une valeur de type entier
+ * Debug message with integer value
  * @brief Tools::debugMessage
- * @param message
- * @param value
+ * @param message the message to display
+ * @param value the integer value
  */
 void Tools::debugMessage(QString message, int value)
 {
@@ -54,10 +54,10 @@ void Tools::debugMessage(QString message, int value)
 }
 
 /**
- * Affichage d'un message de debug suivi d'une valeur de type entier non signé
+ * Debug message with uint value
  * @brief Tools::debugMessage
- * @param message
- * @param value
+ * @param message the message to display
+ * @param value the uint value
  */
 void Tools::debugMessage(QString message, unsigned int value)
 {
@@ -65,10 +65,10 @@ void Tools::debugMessage(QString message, unsigned int value)
 }
 
 /**
- * Affichage d'un message de debug suivi d'une valeur de type chaîne de caractère Qt
+ * Debug message with Qt message
  * @brief Tools::debugMessage
- * @param message
- * @param value
+ * @param message the message to display
+ * @param value the qtmessage
  */
 void Tools::debugMessage(QString message, QString value)
 {
@@ -76,10 +76,10 @@ void Tools::debugMessage(QString message, QString value)
 }
 
 /**
- * Affichage d'un message de debug suivi d'une valeur de type double
+ * Debug message with double value
  * @brief Tools::debugMessage
- * @param message
- * @param value
+ * @param message the message to display
+ * @param value the double value
  */
 void Tools::debugMessage(QString message, double value)
 {
@@ -87,7 +87,7 @@ void Tools::debugMessage(QString message, double value)
 }
 
 /**
- * Ecriture des messages de debug dans des fichiers de logs
+ * Write message in the log file
  * @brief Tools::customMessageHandler
  * @param type
  * @param context
@@ -119,27 +119,27 @@ void Tools::customMessageHandler(QtMsgType type, const QMessageLogContext &conte
 
     dateTime = QDateTime::currentDateTime().toString("dd_MM_yyyy");
 
-    //configuration du nom du fichier de log (LogFile_[dateCourante].log)
+    //Configuration of the log file (LogFile_[currentDate].log)
     QString filenameToCreate = "LogFile_" + dateTime + ".log";
     QFile outFile(filenameToCreate);
 
-    //ouverture du fichier, soit en Mode Ecriture seule, soit en mode Ajout
+    // Open the file (in Writing mode only, or in Append mode)
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 
-    //Ecriture dans fichier de log
+    // Writing in the log file
     QTextStream textStream(&outFile);
     textStream << txt << endl;
 
-    //Ecriture console
+    // Writing in the console
     std::cout << txt.toStdString() << std::endl;
 
 }
 
 /**
- * Conversion d'une image cvMat en une image QPixmap
+ * Convert cv:Mat image into a QPixmap
  * @brief Tools::cvMatToQPixmap
  * @param inMat
- * @return l'image de type QPixmap
+ * @return image the QPixmap object
  */
 QPixmap Tools::cvMatToQPixmap( const cv::Mat &inMat )
 {
@@ -147,10 +147,10 @@ QPixmap Tools::cvMatToQPixmap( const cv::Mat &inMat )
 }
 
 /**
- * Conversion d'une image cvMat en une image QImage
+ * Convert cv:Mat image into a QImage
  * @brief Tools::cvMatToQImage
  * @param inMat
- * @return l'image de type QImage
+ * @return image the QImage object
  */
 QImage Tools::cvMatToQImage( const cv::Mat &inMat )
 {
@@ -195,7 +195,7 @@ QImage Tools::cvMatToQImage( const cv::Mat &inMat )
 }
 
 /**
- * Affichage des labels de boîtes de détection au sein d'une image cv::Mat
+ * Display the label boxes into a cv:Mat
  * @brief set_label
  * @param im
  * @param r

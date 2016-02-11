@@ -42,21 +42,22 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    C_Video* videoController; // Controller video
-    C_Algorithm* algoController; // Controller algorithm
+    C_Video* videoController; // video controller
+    C_Algorithm* algoController; // algorithm controller
 
 public:
-    Ui::MainWindow* ui;
+    Ui::MainWindow* ui;    
+    QTimer *tmrTimer; // Timer declaration
 
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
-    void viewerUpdate(QPixmap image); //Affectation d'une image au QLabel
-    void addParticles(Frame frame); //Ajouter les particules dans la tableView
+    /********** INTERFACE FUNCTIONS **********/
+    void viewerUpdate(QPixmap image); // Add an image (QPixmap) to a viewer (QLabel)
+    void addParticles(Frame frame);   // Add a list of particles in a table for the current frame
 
-    QTimer *tmrTimer; //déclaration du Timer en public pour faciliter son utilisation
-
-    C_Video* getVideoController(){return this->videoController;} //obtention de l'instance de VideoController
+    /********** GETTER **********/
+    C_Video* getVideoController();
 
 };
 

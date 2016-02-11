@@ -14,8 +14,8 @@ public:
     ~Edge();
 
     /********** GETTER *********/
-    unsigned int getSourceNode(void){return this->sourceNode_;}
-    unsigned int getDestinationNode(void){return this->destinationNode_;}
+    unsigned int getSourceNode();
+    unsigned int getDestinationNode();
 };
 
 #endif // EDGE_H

@@ -85,11 +85,6 @@ void Object::drawObject(cv::Mat& img)
     cv::Rect rRect(leftTopPoint_, rightBottomPoint_);
     cv::rectangle(img,rRect,cv::Scalar(255,0,0)); // Couleur bleu(255,0,0) vert(0,255,0) rouge (0,0,255)
 
-    /* CERCLE */
-//    cv::Point point((rightBottomPoint.x + leftTopPoint.x)/2, (rightBottomPoint.y + leftTopPoint.y) / 2 );
-//    cv::circle(img, point,10,cv::Scalar(255,0,0),-1); // Thickness Négative : Cercle plein
-
-
     /* LABEL */
     QString idObjectStr = QString::number(idObject_);
     Tools::setLabel(img,rRect,idObjectStr);

@@ -30,12 +30,12 @@ public:
     QList<Frame> &getFramesList();
     cv::VideoCapture getVideoCapture();
     unsigned int getFramesCount();
-    QPixmap getCurrentImage();
+    QPixmap getNextImage();
     Frame getCurrentFrame();
     unsigned int getFrameIndex();
     bool isObjectsDisplay();
     cv::Mat getFrameMatrix();
-    QPixmap refreshCurrentImage();
+    QPixmap getCurrentImage();
 
     /********** SETTER **********/
     void setIndex(unsigned int frameIndex);
