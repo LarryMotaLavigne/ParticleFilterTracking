@@ -26,10 +26,9 @@ Video::Video(QString file)
         Tools::debugMessage("Impossible de charger la vidéo");
     }
 
-    //Initialisation de l'attribut nom de l'objet Video
-    //QFileInfo contient les informations d'un fichier (nom, extension...)
     QFileInfo fileInfo(file);
-    //on souhaite uniquement récupérer le nom de fichier sans extension
+
+    // Get the filename without the extension
     QString nameFileWithoutExt = fileInfo.baseName();
     this->filename_ = nameFileWithoutExt;
     this->displayObjects_ = false;
@@ -94,7 +93,11 @@ unsigned int Video::getFramesCount()
     return (int) cap_.get(CV_CAP_PROP_FRAME_COUNT);
 }
 
-
+/**
+ * Get the frame matrix without writing
+ * @brief Video::getFrameMatrix
+ * @return result the frame matrix
+ */
 cv::Mat Video::getFrameMatrix()
 {
     return frameMatrix_;
@@ -108,48 +111,34 @@ cv::Mat Video::getFrameMatrix()
  */
 QPixmap Video::getNextImage()
 {
-    cap_ >> frameMatrix_;
-    cv::Mat matrix = frameMatrix_.clone();
-    Frame fr = getCurrentFrame();
-
-    // Objects display
-    if (!fr.getObjectsList().isEmpty() && isObjectsDisplay())
-    {
-        fr.drawObjects(matrix);
-    }
-    // Particles display
-    if (!fr.getParticlesList().isEmpty())
-    {
-        for (int i = 0; i < graphIdToDisplay_.size(); ++i) {
-            fr.drawParticle(matrix,graphIdToDisplay_[i]);
-        }
-    }
-    QPixmap pixmap = Tools::cvMatToQPixmap(matrix);
-    return pixmap;
+    cap_ >> frameMatrix_; // Get the next image from the VideoCapture
+    return getCurrentImage();
 }
 
 
 /**
  * Get the current image with the drawing
- * @brief Video::getNextImage
+ * @brief Video::getCurrentImage
  * @return pixmap the QPixmap object
  */
 QPixmap Video::getCurrentImage()
 {
-    cv::Mat matrix = frameMatrix_.clone();
     Frame fr = getCurrentFrame();
+    cv::Mat matrix = frameMatrix_.clone(); // Create a matrix to draw on it
+
     // Objects display
     if (!fr.getObjectsList().isEmpty() && isObjectsDisplay())
     {
-        Tools::debugMessage("VIDEO : Affichage des objets");
+        Tools::debugMessage("VIDEO : Objects Display");
         fr.drawObjects(matrix);
     }
-    // Particles display
-    if (!fr.getParticlesList().isEmpty() && graphIdToDisplay_.size()!=0)
+    // Graphs display
+    if (!fr.getParticlesList().isEmpty() && particleIdSelected_.size()!=0)
     {
-        Tools::debugMessage("VIDEO : Affichage des graphes");
-        for (int i = 0; i < graphIdToDisplay_.size(); ++i) {
-            fr.drawParticle(matrix,graphIdToDisplay_[i]);
+        Tools::debugMessage("VIDEO : Graphs Display");
+        setParticleWeightSelected();
+        for (int i = 0; i < particleIdSelected_.size(); ++i) {
+            fr.drawParticle(matrix,particleIdSelected_[i],particleWeightSelected_);
         }
     }
     QPixmap pixmap = Tools::cvMatToQPixmap(matrix);
@@ -168,16 +157,27 @@ Frame Video::getCurrentFrame()
         return framesList_.at(currentFrameIndex_);
     }
     return NULL;
+
 }
 
 /**
  * Get the index of the current frame
- * @brief Video::getIndex
+ * @brief Video::getFrameIndex
  * @return currentFrameIndex_ the index of the current frame
  */
 unsigned int Video::getFrameIndex()
 {
     return currentFrameIndex_;
+}
+
+/**
+ * Get the list of the graph id to display
+ * @brief Video::getGraphIdToDisplay
+ * @return currentFrameIndex_ the list of graph id to display
+ */
+QList<unsigned int> Video::getParticleIdSelected()
+{
+    return particleIdSelected_;
 }
 
 /**********************************************************************/
@@ -194,27 +194,73 @@ void Video::setIndex(unsigned int frameIndex)
     currentFrameIndex_ = frameIndex;
 }
 
+/**
+ * Set a boolean to trigger the object displaying
+ * @brief Video::setObjectsDisplay
+ * @param isDisplay a boolean to trigger the object displaying
+ */
 void Video::setObjectsDisplay(bool isDisplay)
 {
     displayObjects_ = isDisplay;
 }
 
-void Video::setGraphDisplay(bool isDisplay, unsigned int graphId)
+/**
+ * Append/remove to 2 lists (id and weight) of particles selected
+ * @brief Video::setParticleDisplay
+ * @param index the new index
+ */
+void Video::setParticleDisplay(bool isDisplay, unsigned int particleId, double particleWeight)
 {
     if(isDisplay)
     {
-        Tools::debugMessage("setGraphDisplay TRUE",graphId);
-        graphIdToDisplay_.append(graphId);
+        Tools::debugMessage("setParticleDisplay TRUE");
+        Tools::debugMessage("setParticleDisplay - ID",particleId);
+        Tools::debugMessage("setParticleDisplay - WEIGHT",particleWeight);
+        if(!particleIdSelected_.contains(particleId))
+        {
+            particleIdSelected_.append(particleId);
+            particleWeightSelected_.append(particleWeight);
+        }
     }
     else
     {
-        Tools::debugMessage("setGraphDisplay FALSE",graphId);
-        for (int i = 0; i < graphIdToDisplay_.size(); ++i)
+        Tools::debugMessage("setParticleDisplay FALSE",particleId);
+        for (int i = 0; i < particleIdSelected_.size(); ++i)
         {
-            if(graphIdToDisplay_[i] == graphId)
+            if(particleIdSelected_[i] == particleId)
             {
-                graphIdToDisplay_.removeAt(i);
+                particleIdSelected_.removeAt(i);
+                particleWeightSelected_.removeAt(i);
             }
+        }
+    }
+}
+
+
+/**
+ * Update the old list based on a new one
+ * @brief Video::setParticleIdSelected
+ * @param newParticleIdSelected the new list
+ */
+void Video::setParticleIdSelected(QList<unsigned int> newParticleIdSelected)
+{
+    particleIdSelected_.clear();
+    particleIdSelected_ = newParticleIdSelected;
+}
+
+
+/**
+ * Update the old list based on a new one
+ * @brief Video::setParticleWeightSelected
+ */
+void Video::setParticleWeightSelected()
+{
+    particleWeightSelected_.clear();
+    Frame fr = getCurrentFrame();
+    for (int i = 0; i < fr.getParticlesList().size(); ++i) {
+        if(particleIdSelected_.contains(fr.getParticlesList().at(i)->getParticleId()))
+        {
+            particleWeightSelected_.append(fr.getParticlesList().at(i)->getWeightParticle());
         }
     }
 }
@@ -258,6 +304,11 @@ void Video::previous()
 }
 
 
+/**
+ * Set a specific frame based on the frame position
+ * @brief Video::setFrame
+ * @param framePosition the frame position
+ */
 void Video::setFrame(unsigned int framePosition)
 {
     currentFrameIndex_ = framePosition;

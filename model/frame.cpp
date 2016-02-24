@@ -157,32 +157,22 @@ void Frame::drawObjects(cv::Mat& img)
     }
 }
 
-/**
- * Draw all the particles of the specific frame
- * @brief Frame::drawParticles
- * @param img the image
- */
-void Frame::drawParticles(cv::Mat& img)
-{
-    for (int i=0;i<particlesList_.size();i++)
-    {
-        particlesList_[i]->drawParticle(img);
-    }
-}
-
 
 /**
  * Draw a single particle of the specific frame
  * @brief Frame::drawParticle
  * @param img the image
  * @param particleId the particle id
+ * @param graphWeightToDisplay the list of particles weight selected
  */
-void Frame::drawParticle(cv::Mat& img, unsigned int particleId)
+void Frame::drawParticle(cv::Mat& img, unsigned int particleId, QList<double> graphWeightToDisplay)
 {
     for (int i = 0; i < particlesList_.size(); ++i)
     {
         if(particlesList_[i]->getParticleId() == particleId)
-            particlesList_[i]->drawParticle(img);
+        {
+            particlesList_[i]->drawParticle(img,graphWeightToDisplay);
+        }
     }
 }
 

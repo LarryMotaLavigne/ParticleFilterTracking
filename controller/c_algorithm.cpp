@@ -257,7 +257,7 @@ bool C_Algorithm::createGraph(QString str)
         //Tools::debugMessage("tempList[0]",tempList.at(0).toInt());
         //Tools::debugMessage("tempList[1]",tempList.at(1).toUInt());
 
-        graphe->setIdGraph(tempList.at(1).toUInt());
+        graphe->setIdParticle(tempList.at(1).toUInt());
         graphe->setWeightParticle(map.value(fileInfo.fileName()));
         //Tools::debugMessage("map value",graphe.getWeightParticle());
         w->getVideoController()->getLoadedVideo()->getFramesList()[tempList.at(0).toInt()].addParticleToFrame(graphe);

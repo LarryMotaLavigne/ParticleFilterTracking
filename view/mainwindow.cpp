@@ -1,6 +1,5 @@
 #include "view/mainwindow.h"
 
-
 /**
  * Constructor
  * @brief MainWindow::MainWindow
@@ -39,11 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->objectsDisplayBox, SIGNAL(clicked()), videoController, SLOT(displayObjects()));
     connect(ui->tableParticle, SIGNAL(itemClicked(QTableWidgetItem*)),videoController,SLOT(displayGraphs(QTableWidgetItem*)));
 
-    //gestion du spinBoxFrame
-    //connect(ui->spinBoxFrame,SIGNAL(valueChanged(int)), videoController, SLOT(goToSpecificFrame()));
-    //gestion du tableau des particules
 }
-
 
 /**
  * Destructor
@@ -53,7 +48,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 
 /**********************************************************************/
@@ -90,13 +84,11 @@ void MainWindow::viewerUpdate(QPixmap image)
  */
 void MainWindow::addParticles(Frame frame)
 {
-
     // Clean the particle table
     while (ui->tableParticle->rowCount()>0)
     {
         ui->tableParticle->removeRow(0);
     }
-
     // Get the particle list
     QList<Particle*> listParticles = frame.getParticlesList();
 
@@ -105,7 +97,7 @@ void MainWindow::addParticles(Frame frame)
     {
         for (int i=0;i<listParticles.size();i++)
         {
-            QTableWidgetItem *idParticle = new QTableWidgetItem(QString::number(i));
+            QTableWidgetItem *idParticle = new QTableWidgetItem(QString().setNum(listParticles.at(i)->getParticleId()));
             QTableWidgetItem *weightParticle = new QTableWidgetItem(QString().setNum(listParticles.at(i)->getWeightParticle()));
 
             // Unable to edit the data inside the QTableView
@@ -114,13 +106,44 @@ void MainWindow::addParticles(Frame frame)
 
             // We insert a new row
             ui->tableParticle->insertRow(i);
-            ui->tableParticle->setItem(i,0,idParticle);
-            ui->tableParticle->setItem(i,1,weightParticle);
+            ui->tableParticle->setItem(i,ID_PARTICLE_TABLEVIEW,idParticle);
+            ui->tableParticle->setItem(i,WEIGHT_PARTICLE_TABLEVIEW,weightParticle);
         }
-        // We sort the particle by id
-        ui->tableParticle->sortByColumn(1);
+        // We sort the particle by WEIGHT
+        ui->tableParticle->sortByColumn(WEIGHT_PARTICLE_TABLEVIEW);
     }
 }
+
+/**
+ * Update the particles table
+ * @brief MainWindow::addParticles
+ * @param frame the frame which contains the particles
+ */
+void MainWindow::selectParticles(Video* video)
+{
+    QList<unsigned int> particleIdSelected = video->getParticleIdSelected();
+    QList<unsigned int> newParticleIdSelected = QList<unsigned int>();
+    if(!particleIdSelected.isEmpty() && particleIdSelected.size() != 0)
+    {
+        int size = (int)ui->tableParticle->rowCount();
+        Tools::debugMessage("Table size",size);
+        Tools::debugMessage("Particle list size",particleIdSelected.size());
+        if(size > 0)
+        {
+            for(int i = 0 ; i < size; i++)
+            {
+                if(particleIdSelected.contains(ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text().toInt()))
+                {
+                    Tools::debugMessage("Row selected",ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text());
+                    ui->tableParticle->selectRow(i);
+                    newParticleIdSelected.append(ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text().toInt());
+                }
+            }
+        }
+    video->setParticleIdSelected(newParticleIdSelected);
+    }
+}
+
 
 /**********************************************************************/
 /*                               GETTER                               */

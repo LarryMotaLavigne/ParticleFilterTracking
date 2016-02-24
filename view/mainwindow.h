@@ -12,7 +12,6 @@
 #include <QPixmap>
 #include <QList>
 
-
 #include <opencv/cv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/video/video.hpp>
@@ -24,10 +23,7 @@
 #include "model/frame.h"
 #include "model/video.h"
 #include "model/particle.h"
-
-
 #include "tools.h"
-
 
 #include "ui_mainwindow.h"
 
@@ -55,6 +51,7 @@ public:
     /********** INTERFACE FUNCTIONS **********/
     void viewerUpdate(QPixmap image); // Add an image (QPixmap) to a viewer (QLabel)
     void addParticles(Frame frame);   // Add a list of particles in a table for the current frame
+    void selectParticles(Video* video); // Refresh the table list with the selected particles
 
     /********** GETTER **********/
     C_Video* getVideoController();

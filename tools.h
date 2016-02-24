@@ -11,7 +11,10 @@
 #include <opencv2/opencv.hpp>
 
 
-
+/********* GLOBAL VARIABLE **********/
+#define ID_PARTICLE_TABLEVIEW 0
+#define WEIGHT_PARTICLE_TABLEVIEW 1
+#define MAX_PARTICLE_DISPLAY 5
 
 class Tools
 {

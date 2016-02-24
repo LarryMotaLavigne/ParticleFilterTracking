@@ -17,9 +17,10 @@ private:
     QList<Frame> framesList_; // Frames list of the video
     cv::VideoCapture cap_; // VideoCapture object from which we get the video image
     unsigned int currentFrameIndex_; // index of the current frame
-    QList<unsigned int> graphIdToDisplay_;
-    bool displayObjects_;
-    cv::Mat frameMatrix_;
+    QList<unsigned int> particleIdSelected_; // List of particle id selected (displayed on the viewer)
+    QList<double> particleWeightSelected_; // List of particles weight selected
+    bool displayObjects_; // Display Objects if TRUE
+    cv::Mat frameMatrix_; // The origin image from the VideoCapture
 public:
     Video();
     Video(QString file);
@@ -36,12 +37,14 @@ public:
     bool isObjectsDisplay();
     cv::Mat getFrameMatrix();
     QPixmap getCurrentImage();
+    QList<unsigned int> getParticleIdSelected();
 
     /********** SETTER **********/
     void setIndex(unsigned int frameIndex);
     void setObjectsDisplay(bool isDisplay);
-    void setGraphDisplay(bool isDisplay, unsigned int graphId);
-
+    void setParticleDisplay(bool isDisplay, unsigned int particleId, double particleWeight);
+    void setParticleIdSelected(QList<unsigned int> newParticleIdSelected);
+    void setParticleWeightSelected();
 
 
     /********** ADDING FUNCTION **********/

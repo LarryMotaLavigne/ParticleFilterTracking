@@ -52,7 +52,7 @@ void C_Video::startOrStopTimer()
         w->ui->previousButton->setEnabled(false);
         w->ui->nextButton->setEnabled(false);
         w->ui->boutonRevenirDebut->setEnabled(false);
-        Tools::debugMessage("-----DEMARRAGE DE LA LECTURE-----");
+        Tools::debugMessage("----- PLAY -----");
     }
     // If the timer is active (The video is playing), we disable it
     else
@@ -64,7 +64,7 @@ void C_Video::startOrStopTimer()
         w->ui->previousButton->setEnabled(true);
         w->ui->nextButton->setEnabled(true);
         w->ui->boutonRevenirDebut->setEnabled(true);
-        Tools::debugMessage("-----ARRET DE LA LECTURE-----");
+        Tools::debugMessage("----- PAUSE -----");
     }
 
 }
@@ -235,6 +235,7 @@ void C_Video::goToNextFrame()
 
     // Update the particles in the table
     w->addParticles(fr);
+    w->selectParticles(getLoadedVideo());
 
     // Update the viewer
     w->viewerUpdate(image);
@@ -267,6 +268,7 @@ void C_Video::goToPreviousFrame()
 
     // Update the particles in the table
     w->addParticles(fr);
+    w->selectParticles(loadedVideo);
 
     // Update the viewer
     w->viewerUpdate(image);
@@ -379,16 +381,25 @@ void C_Video::displayGraphs(QTableWidgetItem* item)
 {
     // If an item (a graph) is selected, we get the ID
     int rowValue = item->row();
-    int idGraph = item->tableWidget()->item(rowValue,0)->text().toInt();
+    int particleId = item->tableWidget()->item(rowValue,ID_PARTICLE_TABLEVIEW)->text().toInt();
+    double particleWeight = item->tableWidget()->item(rowValue,WEIGHT_PARTICLE_TABLEVIEW)->text().toDouble();
     if(item->isSelected())
     {
-        // We add the id to the list
-        getLoadedVideo()->setGraphDisplay(true, idGraph);
+        if(getLoadedVideo()->getParticleIdSelected().size() < MAX_PARTICLE_DISPLAY)
+        {
+            // We add the id to the list
+            getLoadedVideo()->setParticleDisplay(true, particleId, particleWeight);
+        }
+        else
+        {
+            // Deselect table widget item
+            item->tableWidget()->selectRow(rowValue);
+        }
     }
     else
     {
         // We remove the id to the list
-        getLoadedVideo()->setGraphDisplay(false, idGraph);
+        getLoadedVideo()->setParticleDisplay(false, particleId, particleWeight);
     }
 
     // We refresh the viewer

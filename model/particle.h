@@ -1,16 +1,20 @@
-#ifndef PARTICULE_H
-#define PARTICULE_H
+#ifndef PARTICLE_H
+#define PARTICLE_H
+
+#include <QList>
 
 #include <opencv/cv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include "tools.h"
 
 class Particle
 {
 private:
     double weightParticle_; // particle weight
 protected:
-    unsigned int particleId_; // particle id
+    unsigned int idParticle_; // particle id
 public:
 
     Particle();
@@ -19,11 +23,13 @@ public:
     /***** GETTER *****/
     double getWeightParticle();
     unsigned int getParticleId();
+
     /***** SETTER *****/
+    void setIdParticle(unsigned particleId);
     void setWeightParticle(double weightParticle);
 
     /***** DRAWING FUNCTION *****/
-    virtual void drawParticle(cv::Mat&){}; // Omit the parameter name because of polymorphism
+    virtual void drawParticle(cv::Mat&,QList<double>){}; // Omit the parameter name because of polymorphism
 };
 
-#endif // PARTICULE_H
+#endif // PARTICLE_H

@@ -35,7 +35,7 @@ Graph::~Graph()
  */
 Graph::Graph(const Graph& other)
 {
-    this->particleId_ = other.particleId_;
+    this->idParticle_ = other.idParticle_;
     this->nodesCount_ = other.nodesCount_;
 
     this->nodesList_ = other.nodesList_;
@@ -78,21 +78,6 @@ unsigned int Graph::getNodesCount()
 }
 
 /**********************************************************************/
-/*                               SETTER                               */
-/**********************************************************************/
-
-/**
- * Set the graph id
- * @brief Graph::setIdGraph
- * @param id the new id
- */
-void Graph::setIdGraph(unsigned int id)
-{
-    particleId_ = id;
-}
-
-
-/**********************************************************************/
 /*                          ADDING FUNCTIONS                          */
 /**********************************************************************/
 
@@ -126,24 +111,29 @@ void Graph::addEdge(Edge edge)
  * @brief Graph::drawParticle
  * @param img the image
  */
-void Graph::drawParticle(cv::Mat &img)
+void Graph::drawParticle(cv::Mat &img, QList<double> graphWeightToDisplay)
 {
-    // DRAW EACH NODE
-//    std::cout<<"nodeList.size() : "<<nodesList_.size()<<std::endl;
+    cv::Mat temp = img.clone(); // Copy matrix to temp to handle opacity
+
+
+    //==================================================================================================================
+    //== DRAW EACH NODE ==
+    //==================================================================================================================
     for (int i = 0; i < nodesList_.size(); ++i)
     {
-//        std::cout<<"Node "<<i<<" , Position : ("<<nodesList_[i].getPositionNode().x<<","<<nodesList_[i].getPositionNode().y<<")"<<std::endl;
-        cv::circle(img,nodesList_[i].getPositionNode(),3,cv::Scalar(255,0,0),-1);
+        cv::Rect rect(nodesList_[i].getRightBottomPoint(),nodesList_[i].getLeftTopPoint());
+        cv::rectangle(temp,rect,cv::Scalar(255,0,0),-1);
     }
 
-    // DRAW EACH EDGE
+    //==================================================================================================================
+    //== DRAW EACH EDGE ==
+    //==================================================================================================================
     cv::Point2f start(0,0);
     cv::Point2f end(0,0);
     for(int i = 0; i < edgesList_.size() ; ++i)
     {
         for(int j = 0 ; j < nodesList_.size() ; ++j)
         {
-
             if(nodesList_[j].getIdNode() == edgesList_[i].getSourceNode() || nodesList_[j].getIdNode() == edgesList_[i].getDestinationNode())
             {
                 if(start.x == 0 && start.y == 0)
@@ -156,8 +146,23 @@ void Graph::drawParticle(cv::Mat &img)
                 }
             }
         }
-        cv::line(img, start, end, cv::Scalar(255,0,0));
+        cv::line(temp, start, end, cv::Scalar(255,0,0),2);
     }
+
+    //==================================================================================================================
+    //== OPACITY ==
+    //==================================================================================================================
+    std::cout<<"graphWeightToDisplay : "<<graphWeightToDisplay.size()<<std::endl;
+    std::cout<<"Weight Actual Particle : "<<getWeightParticle()<<std::endl;
+    double sum = 0;
+    for(int i = 0 ; i<graphWeightToDisplay.size();i++){
+        std::cout<<"Weight Particle "<<i<<" : "<<graphWeightToDisplay[i]<<std::endl;
+        sum += graphWeightToDisplay[i];
+    }
+
+    double alpha = getWeightParticle()/sum;
+    std::cout<<"ALPHA --->"<<alpha<<std::endl;
+    cv::addWeighted(temp,alpha,img,1.0-alpha,0.0,img);
 
 }
 

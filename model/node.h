@@ -3,6 +3,8 @@
 
 #include <opencv/cv.h>
 
+#include "tools.h"
+
 class Node
 {
 private:
@@ -16,13 +18,18 @@ private:
 
 public:
     Node();
-    Node(unsigned int idNode, unsigned int objectLabel, cv::Point2f nodePosition, unsigned int nodeHeight, unsigned int nodeWidth, bool isVisibleNode);
+    Node(unsigned int idNode, unsigned int objectLabel, cv::Point2f nodePosition, unsigned int nodeWidth, unsigned int nodeHeight, bool isVisibleNode);
     Node(const Node& other);
     ~Node();
 
     /***** GETTER *****/
     unsigned int getIdNode();
     cv::Point2f getPositionNode();
+    unsigned int getNodeHeight();
+    unsigned int getNodeWidth();
+    cv::Point getLeftTopPoint();
+    cv::Point getRightBottomPoint();
+
 };
 
 #endif // NODE_H

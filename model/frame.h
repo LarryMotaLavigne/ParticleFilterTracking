@@ -9,9 +9,9 @@
 #include <opencv2/video/video.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "tools.h"
 #include "model/object.h"
 #include "model/particle.h"
+#include "tools.h"
 
 class Frame
 {
@@ -28,9 +28,10 @@ public:
 
     /********** GETTER **********/
     QList<Object>& getObjectsList();
+    QList<Particle*> getParticlesList();
+
     Object getObjectByPosition(unsigned int position);
     unsigned int getFrameIndex();
-    QList<Particle*> getParticlesList();
     Particle getParticleByPosition(unsigned int position);
 
     /********** SETTER **********/
@@ -39,12 +40,10 @@ public:
     /***** ADDING FUNCTIONS *****/
     void addObject(Object object);
     void addParticleToFrame(Particle* particle);
-    void createLayers();
 
     /***** DRAWING FUNCTIONS *****/
     void drawObjects(cv::Mat& img);
-    void drawParticles(cv::Mat& img);
-    void drawParticle(cv::Mat& img, unsigned int graphId);
+    void drawParticle(cv::Mat& img, unsigned int graphId, QList<double> graphWeightToDisplay);
 };
 
 #endif // FRAME_H

@@ -2,7 +2,7 @@
 
 /**
  * Default constructor
- * @brief FrameParticule::FrameParticule
+ * @brief Particle::Particle
  */
 Particle::Particle()
 {
@@ -11,7 +11,7 @@ Particle::Particle()
 
 /**
  * Destructor
- * @brief FrameParticule::~FrameParticule
+ * @brief Particle::~Particle
  */
 Particle::~Particle()
 {
@@ -25,7 +25,7 @@ Particle::~Particle()
 
 /**
  * Get the particle weight
- * @brief FrameParticule::getWeightParticle
+ * @brief Particle::getWeightParticle
  * @return weightParticule_ the particle weight
  */
 double Particle::getWeightParticle()
@@ -35,7 +35,7 @@ double Particle::getWeightParticle()
 
 unsigned int Particle::getParticleId()
 {
-    return particleId_;
+    return idParticle_;
 }
 
 /**********************************************************************/
@@ -44,10 +44,20 @@ unsigned int Particle::getParticleId()
 
 /**
  * Set the particle weight
- * @brief FrameParticule::setWeightParticle
+ * @brief Particle::setWeightParticle
  * @param weightParticle the weight to set²
  */
 void Particle::setWeightParticle(double weightParticle)
 {
-    weightParticle_ = weightParticle;
+    this->weightParticle_ = weightParticle;
+}
+
+/**
+ * Set the particle id
+ * @brief Particle::setIdParticle
+ * @param idParticle the id of the particle
+ */
+void Particle::setIdParticle(unsigned idParticle)
+{
+    this->idParticle_ = idParticle;
 }

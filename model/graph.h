@@ -6,7 +6,7 @@
 #include "model/node.h"
 #include "model/edge.h"
 #include "model/particle.h"
-
+#include "tools.h"
 
 class Graph : public Particle
 {
@@ -29,15 +29,12 @@ public:
     QList<Edge> &getEdgesList();
     unsigned int getNodesCount();
 
-    /***** SETTER *****/
-    void setIdGraph(unsigned int id);
-
     /***** ADDING FUNCTIONS *****/
     void addNode(Node node);
     void addEdge(Edge edge);
 
     /***** DRAWING FUNCTION *****/
-    void drawParticle(cv::Mat& img);
+    void drawParticle(cv::Mat& img, QList<double> graphWeightToDisplay);
 };
 
 #endif // GRAPH_H

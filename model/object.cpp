@@ -82,11 +82,15 @@ cv::Point Object::getRightBottomPoint()
 void Object::drawObject(cv::Mat& img)
 {
     /* RECTANGLE */
-    cv::Rect rRect(leftTopPoint_, rightBottomPoint_);
-    cv::rectangle(img,rRect,cv::Scalar(255,0,0)); // Couleur bleu(255,0,0) vert(0,255,0) rouge (0,0,255)
+    cv::Mat temp = img.clone();
+
+    cv::Rect rect(leftTopPoint_, rightBottomPoint_);
+    cv::rectangle(temp,rect,cv::Scalar(255,0,0),-1); // Blue (255,0,0) Green(0,255,0) Red(0,0,255)
+    double alpha = 0.3;
+    cv::addWeighted(temp,alpha,img,1.0-alpha,0.0,img);
 
     /* LABEL */
     QString idObjectStr = QString::number(idObject_);
-    Tools::setLabel(img,rRect,idObjectStr);
+    Tools::setLabel(img,rect,idObjectStr);
 }
 

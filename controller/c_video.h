@@ -6,9 +6,9 @@
 #include <QFileDialog>
 #include <QTableWidgetItem>
 
-#include "view/mainwindow.h"
-
 #include "model/video.h"
+#include "view/mainwindow.h"
+#include "tools.h"
 
 class C_Video : public QObject
 {
@@ -20,7 +20,6 @@ public:
     ~C_Video();
 
     Video* getLoadedVideo();
-
 public slots :
     /********* TIMER *********/
     void startOrStopTimer(); //Start or Stop the timer
