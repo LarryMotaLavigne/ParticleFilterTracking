@@ -43,7 +43,7 @@ public:
 
     /***** DRAWING FUNCTIONS *****/
     void drawObjects(cv::Mat& img);
-    void drawParticle(cv::Mat& img, unsigned int graphId, QList<double> graphWeightToDisplay);
+    void drawParticle(cv::Mat& img, unsigned int position, unsigned int particleId, QList<double> particleWeightToDisplay);
 };
 
 #endif // FRAME_H

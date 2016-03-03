@@ -29,7 +29,7 @@ public:
     void setWeightParticle(double weightParticle);
 
     /***** DRAWING FUNCTION *****/
-    virtual void drawParticle(cv::Mat&,QList<double>){}; // Omit the parameter name because of polymorphism
+    virtual void drawParticle(cv::Mat&,unsigned int,QList<double>){}; // Omit the parameter name because of polymorphism
 };
 
 #endif // PARTICLE_H

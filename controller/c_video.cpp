@@ -379,27 +379,27 @@ void C_Video::displayObjects(){
  */
 void C_Video::displayGraphs(QTableWidgetItem* item)
 {
-    // If an item (a graph) is selected, we get the ID
-    int rowValue = item->row();
-    int particleId = item->tableWidget()->item(rowValue,ID_PARTICLE_TABLEVIEW)->text().toInt();
-    double particleWeight = item->tableWidget()->item(rowValue,WEIGHT_PARTICLE_TABLEVIEW)->text().toDouble();
+    // If an item (a graph) is selected, we get the POSITION, ID, and WEIGHT
+    int position = item->row();
+    int particleId = item->tableWidget()->item(position,Tools::idParticleTableview)->text().toInt();
+    double particleWeight = item->tableWidget()->item(position,Tools::weightParticleTableView)->text().toDouble();
     if(item->isSelected())
     {
-        if(getLoadedVideo()->getParticleIdSelected().size() < MAX_PARTICLE_DISPLAY)
+        if(getLoadedVideo()->getParticleIdSelected().size() < Tools::maxParticleDisplay)
         {
             // We add the id to the list
-            getLoadedVideo()->setParticleDisplay(true, particleId, particleWeight);
+            getLoadedVideo()->setParticleDisplay(true, position, particleId, particleWeight);
         }
         else
         {
             // Deselect table widget item
-            item->tableWidget()->selectRow(rowValue);
+            item->tableWidget()->selectRow(position);
         }
     }
     else
     {
         // We remove the id to the list
-        getLoadedVideo()->setParticleDisplay(false, particleId, particleWeight);
+        getLoadedVideo()->setParticleDisplay(false, position, particleId, particleWeight);
     }
 
     // We refresh the viewer

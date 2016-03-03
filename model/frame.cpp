@@ -165,13 +165,13 @@ void Frame::drawObjects(cv::Mat& img)
  * @param particleId the particle id
  * @param graphWeightToDisplay the list of particles weight selected
  */
-void Frame::drawParticle(cv::Mat& img, unsigned int particleId, QList<double> graphWeightToDisplay)
+void Frame::drawParticle(cv::Mat& img,unsigned int position, unsigned int particleId, QList<double> particleWeightToDisplay)
 {
     for (int i = 0; i < particlesList_.size(); ++i)
     {
         if(particlesList_[i]->getParticleId() == particleId)
         {
-            particlesList_[i]->drawParticle(img,graphWeightToDisplay);
+            particlesList_[i]->drawParticle(img, position, particleWeightToDisplay);
         }
     }
 }

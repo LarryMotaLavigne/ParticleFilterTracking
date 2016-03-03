@@ -7,9 +7,10 @@
 
 int main(int argc, char *argv[])
 {
-    //utilisation des fichiers de log pour messages de debug
+    // Using log file to handle debug messages
     qInstallMessageHandler(Tools::customMessageHandler);
-    Tools::debugMessage("-----------------------LANCEMENT DE L'APPLICATION-----------------------");
+    Tools::debugMessage("----------------------- RUNNING THE APP -----------------------");
+    Tools::configuration();
 
     QApplication a(argc, argv);
 

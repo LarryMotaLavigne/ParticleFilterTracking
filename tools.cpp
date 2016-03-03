@@ -1,7 +1,16 @@
 #include "tools.h"
-#include <QDebug>
-#include <QDateTime>
-#include <QFile>
+
+/********* GLOBAL VARIABLE INIT **********/
+int Tools::idParticleTableview = 0;
+int Tools::weightParticleTableView = 1;
+int Tools::maxParticleDisplay = 5;
+cv::Scalar Tools::objectColor = CV_RGB(0,255,0);
+cv::Scalar Tools::labelColor = CV_RGB(0,255,0);
+cv::Scalar Tools::particleColor = CV_RGB(0,0,255);
+int Tools::edgeThickness = 2;
+int Tools::rectangleThickness = -1;
+QList<cv::Scalar> Tools::colorList({CV_RGB(255,0,0),CV_RGB(255,127,0),CV_RGB(255,255,0),CV_RGB(127,255,0),CV_RGB(0,255,0),CV_RGB(0,255,127),CV_RGB(0,255,255),CV_RGB(0,127,255),CV_RGB(0,0,255),CV_RGB(127,0,255),CV_RGB(255,0,255),CV_RGB(255,0,127)});
+
 
 /**
  * Constructor
@@ -20,6 +29,67 @@ Tools::~Tools()
 {
 
 }
+
+
+/**
+ * Get configuration properties from the config file
+ * @brief Tools::configuration
+ */
+void Tools::configuration()
+{
+    debugMessage("Configuration");
+    // Get info from file configuration.conf
+
+    QFile file("configuration.conf");
+    if(!file.open(QIODevice::ReadOnly)) {
+        debugMessage("Error",file.errorString());
+    }
+
+    QTextStream in(&file);
+
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        debugMessage("CONF",line);
+
+        QStringList fields = line.split(" ");
+        if(fields.at(0) == "idParticleTableview")
+        {
+            idParticleTableview = fields.at(1).toInt();
+        }
+        else if(fields.at(0) == "weightParticleTableView")
+        {
+            weightParticleTableView = fields.at(1).toInt();
+        }
+        else if(fields.at(0) == "maxParticleDisplay")
+        {
+            maxParticleDisplay = fields.at(1).toInt();
+        }
+        else if(fields.at(0) == "edgeThickness")
+        {
+            edgeThickness = fields.at(1).toInt();
+        }
+        else if(fields.at(0) == "rectangleThickness")
+        {
+            rectangleThickness = fields.at(1).toInt();
+        }
+        else if(fields.at(0) == "objectColor")
+        {
+            objectColor = CV_RGB(fields.at(1).toInt(),fields.at(2).toInt(),fields.at(3).toInt());
+        }
+        else if(fields.at(0) == "labelColor")
+        {
+            labelColor = CV_RGB(fields.at(1).toInt(),fields.at(2).toInt(),fields.at(3).toInt());
+        }
+        else if(fields.at(0) == "particleColor")
+        {
+            particleColor = CV_RGB(fields.at(1).toInt(),fields.at(2).toInt(),fields.at(3).toInt());
+        }
+
+    }
+
+    file.close();
+}
+
 
 /**
  * Simple debug message
@@ -210,5 +280,5 @@ void Tools::setLabel(cv::Mat& im, cv::Rect r, QString label)
     //cv::Point pt(r.x + (r.width-text.width)/2, r.y + (r.height+text.height)/2);
     cv::Point pt(r.x,r.y - 5);
 
-    cv::putText(im, label.toStdString(), pt, fontface, scale, CV_RGB(255,0,0), thickness, 8);
+    cv::putText(im, label.toStdString(), pt, fontface, scale, Tools::labelColor, thickness, 8);
 }

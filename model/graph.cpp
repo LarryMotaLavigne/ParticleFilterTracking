@@ -111,10 +111,21 @@ void Graph::addEdge(Edge edge)
  * @brief Graph::drawParticle
  * @param img the image
  */
-void Graph::drawParticle(cv::Mat &img, QList<double> graphWeightToDisplay)
+void Graph::drawParticle(cv::Mat &img, unsigned int position, QList<double> graphWeightToDisplay)
 {
     cv::Mat temp = img.clone(); // Copy matrix to temp to handle opacity
 
+
+    /***** Define the color *****/
+    cv::Scalar particleColor;
+    if(position >= Tools::colorList.size())
+    {
+        particleColor = Tools::particleColor; // Default Color
+    }
+    else
+    {
+        particleColor = Tools::colorList.at(position); // Specific Color from the colorList position
+    }
 
     //==================================================================================================================
     //== DRAW EACH NODE ==
@@ -122,7 +133,7 @@ void Graph::drawParticle(cv::Mat &img, QList<double> graphWeightToDisplay)
     for (int i = 0; i < nodesList_.size(); ++i)
     {
         cv::Rect rect(nodesList_[i].getRightBottomPoint(),nodesList_[i].getLeftTopPoint());
-        cv::rectangle(temp,rect,cv::Scalar(255,0,0),-1);
+        cv::rectangle(temp,rect,particleColor,Tools::rectangleThickness);
     }
 
     //==================================================================================================================
@@ -146,7 +157,7 @@ void Graph::drawParticle(cv::Mat &img, QList<double> graphWeightToDisplay)
                 }
             }
         }
-        cv::line(temp, start, end, cv::Scalar(255,0,0),2);
+        cv::line(temp, start, end, particleColor,Tools::edgeThickness);
     }
 
     //==================================================================================================================

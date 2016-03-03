@@ -34,7 +34,7 @@ public:
     void addEdge(Edge edge);
 
     /***** DRAWING FUNCTION *****/
-    void drawParticle(cv::Mat& img, QList<double> graphWeightToDisplay);
+    void drawParticle(cv::Mat& img, unsigned int position, QList<double> graphWeightToDisplay);
 };
 
 #endif // GRAPH_H

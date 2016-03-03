@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     model/edge.cpp \
     model/particle.cpp \
     model/object.cpp \
-    model/graph.cpp
+    model/graph.cpp \
+    view/helpwindow.cpp
 
 HEADERS  += tools.h \
     model/frame.h \
@@ -37,13 +38,15 @@ HEADERS  += tools.h \
     model/edge.h \
     model/particle.h \
     model/object.h \
-    model/graph.h
+    model/graph.h \
+    view/helpwindow.h
 
 INCLUDEPATH += C:\opencv-mingw\install\include
 LIBS += -L"C:/opencv-mingw/install/x86/mingw/bin"
 LIBS += -lopencv_core2410 -lopencv_highgui2410 -lopencv_imgproc2410 -lopencv_video2410
 
-FORMS+= view/mainwindow.ui
+FORMS+= view/mainwindow.ui \
+    view/helpwindow.ui
 
 RESOURCES += \
     resources.qrc

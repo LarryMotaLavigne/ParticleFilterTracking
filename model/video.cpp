@@ -138,7 +138,7 @@ QPixmap Video::getCurrentImage()
         Tools::debugMessage("VIDEO : Graphs Display");
         setParticleWeightSelected();
         for (int i = 0; i < particleIdSelected_.size(); ++i) {
-            fr.drawParticle(matrix,particleIdSelected_[i],particleWeightSelected_);
+            fr.drawParticle(matrix,positionSelected_[i],particleIdSelected_[i],particleWeightSelected_);
         }
     }
     QPixmap pixmap = Tools::cvMatToQPixmap(matrix);
@@ -180,6 +180,11 @@ QList<unsigned int> Video::getParticleIdSelected()
     return particleIdSelected_;
 }
 
+QList<unsigned int> Video::getPositionSelected()
+{
+    return positionSelected_;
+}
+
 /**********************************************************************/
 /*                               SETTER                               */
 /**********************************************************************/
@@ -209,15 +214,17 @@ void Video::setObjectsDisplay(bool isDisplay)
  * @brief Video::setParticleDisplay
  * @param index the new index
  */
-void Video::setParticleDisplay(bool isDisplay, unsigned int particleId, double particleWeight)
+void Video::setParticleDisplay(bool isDisplay,unsigned int position, unsigned int particleId, double particleWeight)
 {
     if(isDisplay)
     {
         Tools::debugMessage("setParticleDisplay TRUE");
+        Tools::debugMessage("setParticleDisplay - POSITION", position);
         Tools::debugMessage("setParticleDisplay - ID",particleId);
         Tools::debugMessage("setParticleDisplay - WEIGHT",particleWeight);
         if(!particleIdSelected_.contains(particleId))
         {
+            positionSelected_.append(position);
             particleIdSelected_.append(particleId);
             particleWeightSelected_.append(particleWeight);
         }
@@ -229,6 +236,7 @@ void Video::setParticleDisplay(bool isDisplay, unsigned int particleId, double p
         {
             if(particleIdSelected_[i] == particleId)
             {
+                positionSelected_.removeAt(i);
                 particleIdSelected_.removeAt(i);
                 particleWeightSelected_.removeAt(i);
             }

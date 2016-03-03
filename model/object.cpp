@@ -85,7 +85,7 @@ void Object::drawObject(cv::Mat& img)
     cv::Mat temp = img.clone();
 
     cv::Rect rect(leftTopPoint_, rightBottomPoint_);
-    cv::rectangle(temp,rect,cv::Scalar(255,0,0),-1); // Blue (255,0,0) Green(0,255,0) Red(0,0,255)
+    cv::rectangle(temp,rect,Tools::objectColor,Tools::rectangleThickness);
     double alpha = 0.3;
     cv::addWeighted(temp,alpha,img,1.0-alpha,0.0,img);
 

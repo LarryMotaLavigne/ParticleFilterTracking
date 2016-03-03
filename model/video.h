@@ -17,6 +17,7 @@ private:
     QList<Frame> framesList_; // Frames list of the video
     cv::VideoCapture cap_; // VideoCapture object from which we get the video image
     unsigned int currentFrameIndex_; // index of the current frame
+    QList<unsigned int> positionSelected_;
     QList<unsigned int> particleIdSelected_; // List of particle id selected (displayed on the viewer)
     QList<double> particleWeightSelected_; // List of particles weight selected
     bool displayObjects_; // Display Objects if TRUE
@@ -38,11 +39,12 @@ public:
     cv::Mat getFrameMatrix();
     QPixmap getCurrentImage();
     QList<unsigned int> getParticleIdSelected();
+    QList<unsigned int> getPositionSelected();
 
     /********** SETTER **********/
     void setIndex(unsigned int frameIndex);
     void setObjectsDisplay(bool isDisplay);
-    void setParticleDisplay(bool isDisplay, unsigned int particleId, double particleWeight);
+    void setParticleDisplay(bool isDisplay,unsigned int position, unsigned int particleId, double particleWeight);
     void setParticleIdSelected(QList<unsigned int> newParticleIdSelected);
     void setParticleWeightSelected();
 

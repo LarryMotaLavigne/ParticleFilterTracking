@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     videoController = new C_Video(this); // Video Controller Initialization
     algoController = new C_Algorithm(this); // Algorithm Controller Initialization
 
+    ui->tableParticle->setItemDelegate(new BackgroundDelegate(this));
+
     // All button are disabled at first except the button used for opening the video
     ui->action_openAlgorithm->setEnabled(false);
     ui->boutonRevenirDebut->setEnabled(false);
@@ -31,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /********** SLOT & SIGNAL **********/
     connect(ui->action_openVideo, SIGNAL(triggered()), videoController, SLOT(openVideo()));
     connect(ui->action_openAlgorithm, SIGNAL(triggered()), algoController, SLOT(openAlgorithm()));
+    connect(ui->action_help, SIGNAL(triggered()), this, SLOT(openHelpWindow()));
     connect(ui->boutonRevenirDebut, SIGNAL(clicked()), videoController, SLOT(returnToFirstFrame()));
     connect(ui->nextButton, SIGNAL(clicked()), videoController, SLOT(goToNextFrame()));
     connect(ui->previousButton, SIGNAL(clicked()), videoController, SLOT(goToPreviousFrame()));
@@ -56,7 +59,7 @@ MainWindow::~MainWindow()
 
 /**
  * Update the label viewer from the mainwindow
- * @brief MainWindow::setFrameIntoLabel
+ * @brief MainWindow::viewUpdate
  * @param image the pixmap to update
  */
 void MainWindow::viewerUpdate(QPixmap image)
@@ -84,6 +87,7 @@ void MainWindow::viewerUpdate(QPixmap image)
  */
 void MainWindow::addParticles(Frame frame)
 {
+
     // Clean the particle table
     while (ui->tableParticle->rowCount()>0)
     {
@@ -106,41 +110,51 @@ void MainWindow::addParticles(Frame frame)
 
             // We insert a new row
             ui->tableParticle->insertRow(i);
-            ui->tableParticle->setItem(i,ID_PARTICLE_TABLEVIEW,idParticle);
-            ui->tableParticle->setItem(i,WEIGHT_PARTICLE_TABLEVIEW,weightParticle);
+            ui->tableParticle->setItem(i,Tools::idParticleTableview,idParticle);
+            ui->tableParticle->setItem(i,Tools::weightParticleTableView,weightParticle);
+            /*
+            QTableWidgetItem *color = new QTableWidgetItem()
+            ui->tableParticle->setItem(i,2,);
+            */
         }
         // We sort the particle by WEIGHT
-        ui->tableParticle->sortByColumn(WEIGHT_PARTICLE_TABLEVIEW);
+        ui->tableParticle->sortByColumn(Tools::weightParticleTableView);
     }
+
+    // tableParticle Selection
+    QPalette * palette = new QPalette();
+    palette->setColor(QPalette::Highlight,Qt::lightGray);
+    ui->tableParticle->setPalette(*palette);
+
 }
 
 /**
  * Update the particles table
- * @brief MainWindow::addParticles
+ * @brief MainWindow::selectParticles
  * @param frame the frame which contains the particles
  */
 void MainWindow::selectParticles(Video* video)
 {
-    QList<unsigned int> particleIdSelected = video->getParticleIdSelected();
+    QList<unsigned int> positionSelected = video->getPositionSelected();
     QList<unsigned int> newParticleIdSelected = QList<unsigned int>();
-    if(!particleIdSelected.isEmpty() && particleIdSelected.size() != 0)
+
+    if(!positionSelected.isEmpty() && positionSelected.size() != 0)
     {
         int size = (int)ui->tableParticle->rowCount();
         Tools::debugMessage("Table size",size);
-        Tools::debugMessage("Particle list size",particleIdSelected.size());
+        Tools::debugMessage("Particle list size",positionSelected.size());
         if(size > 0)
         {
-            for(int i = 0 ; i < size; i++)
-            {
-                if(particleIdSelected.contains(ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text().toInt()))
-                {
-                    Tools::debugMessage("Row selected",ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text());
-                    ui->tableParticle->selectRow(i);
-                    newParticleIdSelected.append(ui->tableParticle->item(i,ID_PARTICLE_TABLEVIEW)->text().toInt());
-                }
+            int i;
+            foreach (i, positionSelected) {
+                Tools::debugMessage("Row selected",ui->tableParticle->item(i,Tools::idParticleTableview)->text());
+                ui->tableParticle->selectRow(i);
+                newParticleIdSelected.append(ui->tableParticle->item(i,Tools::idParticleTableview)->text().toInt());
             }
         }
+    // UPDATE the list of Particle ID and WEIGHT
     video->setParticleIdSelected(newParticleIdSelected);
+    video->setParticleWeightSelected();
     }
 }
 
@@ -157,4 +171,15 @@ void MainWindow::selectParticles(Video* video)
 C_Video* MainWindow::getVideoController()
 {
     return this->videoController;
+}
+
+/**********************************************************************/
+/*                                SLOTS                               */
+/**********************************************************************/
+
+
+void MainWindow::openHelpWindow()
+{
+    this->helpWindow = new HelpWindow(this);
+    helpWindow->show();
 }
